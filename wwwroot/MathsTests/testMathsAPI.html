@@ -66,6 +66,7 @@
         })
 
         async function launchTests(host) {
+            console
             problems = 0;
             $(".container").empty();
             $("#verdict").text("Test en cours");
@@ -76,11 +77,11 @@
                 await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=0", showResult)
-                await webAPI_getMaths(host, "?op=/&x=0&y=0", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
+                await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
+                await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
+                await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
+                await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
+                await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
                 // await webAPI_getMaths(host, "?op=!&n=0", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=0", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=1", showResult)
@@ -112,12 +113,10 @@
         }
 
         function verify(result) {
-            result = JSON.parse(result);
-            console.log(Object.keys(result).length);
+            // console.log("result :",JSON.parse(result))
             if (result.op != null) {
                 switch (result.op) {
                     case '+':
-                    case ' ':
                     case '-':
                     case '*':
                     case '/':
@@ -126,11 +125,11 @@
                             return (result.error != null);
                         if (result.x == null)
                             return (result.error != null);
-                        if (parseInt(result.x) == NaN)
+                        if (isNaN(parseInt(result.x)))
                             return (result.error != null);
                         if (result.y == null)
                             return (result.error != null);
-                        if (parseInt(result.y) == NaN)
+                        if (isNaN(parseInt(result.y)))
                             return (result.error != null);
                         break;
                     case '!':
@@ -140,7 +139,7 @@
                             return (result.error != null);
                         if (result.n == null)
                             return (result.error != null);
-                        if (parseInt(result.n) == NaN)
+                        if (isNaN(parseInt(result.n)))
                             return (result.error != null);
                         if (/[\.]/.test(String(result.n))) // is float
                             return (result.error != null);
@@ -152,6 +151,7 @@
                 }
                 if (result.value == null)
                     return false;
+
                 switch (result.op) {
                     case '+': return (result.value == parseFloat(result.x) + parseFloat(result.y));
                     case '-': return (result.value == parseFloat(result.x) - parseFloat(result.y));
@@ -170,19 +170,18 @@
                     default:
                         return (result.error != null);
                 }
-
             } else {
-                console.log("Error")
                 return (result.error != null)
             }
             return true;
         }
+
         function showResult(result) {
+            result = JSON.parse(result);
             let problem = !verify(result);
             let status = (!problem ? "OK" : "ERROR");
             if (problem)
                 problems++;
-            result = JSON.parse(result);
             $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
         }
         function factorial(n) {

@@ -10,7 +10,6 @@ function webAPI_getMaths(host, queryString, successCallBack = null, errorCallBac
             success: mathsResult => {
                 if (successCallBack != null)
                     successCallBack(mathsResult);
-                console.log(mathsResult)
                 resolve(true);
             },
             error: function (jqXHR, textStatus, errorThrown) {
