@@ -8,43 +8,46 @@ export default class CoursesController extends Controller {
         this.params = HttpContext.path.params;
     }
     startOperation() {
+        const validOperations = [' ','+', '-', '/', '*', '%', '!', 'p', 'np'];
+        const XYOperations = [' ','+', '-', '/', '*', '%'];
+        const NOperation = ['!', 'p', 'np'];
         let result;
-        let x = parseFloat(this.params.x);
-        let y = parseFloat(this.params.y);
-        let n = parseInt(this.params.n);
-        let isInt = Number.isInteger(this.params.n);
-        if (this.params.op == ' ') {
-            this.params.op = '+';
-            result = this.sum(x, y);
-        } else if (this.params.op == '-') {
-            result = this.sub(x, y);
-        } else if (this.params.op == '/') {
-            result = this.div(x, y);
-        } else if (this.params.op == '*') {
-            result = this.multi(x, y);
-        } else if (this.params.op == '%') {
-            result = this.mod(x, y);
-        } else if (isInt) {
-            if (this.params.op == '!') {
-                this.fact(n);
-            } else if (this.params.op == 'n') {
-                this.isPrime(n);
-            } else if (this.params.op == 'np') {
-                this.findPrime(n);
-            }
+        let isInteger = Number.isInteger(parseFloat(this.params.n));
+        if (!validOperations.includes(this.params.op)) {
+                this.params.error = 'There is a error with the operation parameter';
         } else {
-            let isString = value => typeof value === 'string';
-            if (!isInt) {
-                this.params.error = "Not integer";
-            } else if (this.params.op == null || x == null || y == null || n == null) {
-                this.params.error = "Not enough parameters";
-            } else if (isString(x) || isNaN(x) || isString(y) || isNaN(y) || isString(n) || isNaN(n)) {
-                this.params.error = "A parameter is not a number";
+            if (XYOperations.includes(this.params.op)) {
+                let x = parseFloat(this.params.x);
+                let y = parseFloat(this.params.y);
+                    if (this.params.op === ' ') {
+                        this.params.op = '+'
+                        result = this.sum(x, y);
+                    } else if (this.params.op === '-') {
+                        result = this.sub(x, y);
+                    } else if (this.params.op === '/') {
+                        result = this.div(x, y);
+                    } else if (this.params.op === '*') {
+                        result = this.multi(x, y);
+                    } else if (this.params.op === '%') {
+                        result = this.mod(x,y);
+                    }
+                
+            }
+            else if(isInteger && NOperation.includes(this.params.op)){
+                let n = parseInt(this.params.n);
+                if (this.params.op === '!') {
+                    result = this.factorial(n);
+                } else if (this.params.op === 'p') {
+                    result = this.isPrime(n);
+                } else if (this.params.op === 'np') {
+                    result = this.findNthPrime(n);
+                } 
             }
         }
-        this.params.value = result;
+        if (!this.params.error) {
+            this.params.value = result;
+        }
         this.HttpContext.response.end(JSON.stringify(this.params));
-        // this.HttpContext.response.JSON({ op:JSON.stringify(this.params.op), x, y, value: result });
     }
     sum(x, y) {
         return x + y;
@@ -67,7 +70,7 @@ export default class CoursesController extends Controller {
         }
         return n * factorial(n - 1);
     }
-    isPrime(n) {
+    isPrimer(n) {
         for (var i = 2; i < value; i++) {
             if (value % i === 0) {
                 return false;
@@ -85,6 +88,41 @@ export default class CoursesController extends Controller {
         }
         return primeNumer;
     }
+
+ 
+    factorial(n) {
+        if (n === 0 || n === 1) {
+            return 1;
+        } else {
+            return n * factorial(n - 1);
+        }
+    }
+
+    isPrime(n) {
+        if (n <= 1) {
+            return false;
+        }
+        for (let i = 2; i <= Math.sqrt(n); i++) {
+            if (n % i === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    findNthPrime(n) {
+        let count = 0;
+        let num = 2;
+        while (count < n) {
+            if (this.isPrime(num)) {
+                count++;
+            }
+            num++;
+        }
+        return num - 1;
+    }
+
+
     help() {
         let helpPagePath = path.join(process.cwd(), wwwroot, 'API-Help-Pages/API-Maths-Help.html');
         this.HttpContext.response.HTML(fs.readFileSync(helpPagePath));

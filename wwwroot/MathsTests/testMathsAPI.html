@@ -73,34 +73,39 @@
             if (!(await webAPI_getMaths(host, "?op=+&x=-111&y=-244", showResult)))
                 problems = -1;
             else {
-                await webAPI_getMaths(host, "?op=-&x=111&y=244", showResult)
-                await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
-                await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
+                // await webAPI_getMaths(host, "?op=-&x=111&y=244", showResult)
+                // await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
+                // await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=0", showResult)
-                await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
-                await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
-                await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
-                await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
-                await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
+                // await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
+                // await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
+                // await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
+                //null error response
+                // await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
+                // await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
                 // await webAPI_getMaths(host, "?op=!&n=0", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=0", showResult)
+                //n variable
+                await webAPI_getMaths(host, "?op=p&n=0", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=1", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=2", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=5", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=6", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=6.5", showResult)
+                await webAPI_getMaths(host, "?op=p&n=6.5", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=113", showResult)
                 // await webAPI_getMaths(host, "?op=p&n=114", showResult)
-                // await webAPI_getMaths(host, "?op=np&n=1", showResult)
+                // await webAPI_getMaths(host, "?op=np&n=1", showResult) 
                 // await webAPI_getMaths(host, "?op=np&n=30", showResult)
-                // await webAPI_getMaths(host, "?op=+&X=111&y=244", showResult)
-                // await webAPI_getMaths(host, "?op=+&x=111&Y=244", showResult)
-                // await webAPI_getMaths(host, "?op=+&x=111&y=244&z=0", showResult)
-                // await webAPI_getMaths(host, "?op=!&n=5&z=0", showResult)
-                // await webAPI_getMaths(host, "?op=!&n=5.5", showResult)
-                // await webAPI_getMaths(host, "?z=0", showResult)
-                // await webAPI_getMaths(host, "?op=!&n=-5", showResult)
-                // await webAPI_getMaths(host, "?x", showResult)
+                //maj
+                await webAPI_getMaths(host, "?op=+&X=111&y=244", showResult)
+                await webAPI_getMaths(host, "?op=+&x=111&Y=244", showResult)
+                //too much var or not enough
+                await webAPI_getMaths(host, "?op=+&x=111&y=244&z=0", showResult)
+                await webAPI_getMaths(host, "?op=!&n=5&z=0", showResult)
+                //check int / is pos / variables
+                await webAPI_getMaths(host, "?op=!&n=5.5", showResult)
+                await webAPI_getMaths(host, "?z=0", showResult)
+                await webAPI_getMaths(host, "?op=!&n=-5", showResult)
+                await webAPI_getMaths(host, "?x", showResult)
             }
             if (problems == -1) {
                 $("#verdict").text("Service introuvable!");
@@ -178,11 +183,13 @@
 
         function showResult(result) {
             result = JSON.parse(result);
+            // console.log(result);
             let problem = !verify(result);
             let status = (!problem ? "OK" : "ERROR");
             if (problem)
                 problems++;
-            $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
+            // $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
+            $(".container").append(status + " ---> " + JSON.stringify(result)).append($("<br>"));
         }
         function factorial(n) {
             if (n === 0 || n === 1) {
