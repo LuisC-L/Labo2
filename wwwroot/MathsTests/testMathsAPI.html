@@ -23,6 +23,14 @@
             font-size: large;
             font-weight: bold;
         }
+
+        .ok {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
     </style>
 </head>
 
@@ -73,28 +81,29 @@
             if (!(await webAPI_getMaths(host, "?op=+&x=-111&y=-244", showResult)))
                 problems = -1;
             else {
-                // await webAPI_getMaths(host, "?op=-&x=111&y=244", showResult)
-                // await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
-                // await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
+                await webAPI_getMaths(host, "?op=-&x=111&y=244", showResult)
+                await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
+                await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=0", showResult)
-                // await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
+                await webAPI_getMaths(host, "?op=/&x=0&y=5", showResult)
+                await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
+                await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
+                await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
                 //null error response
-                // await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
-                // await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
-                // await webAPI_getMaths(host, "?op=!&n=0", showResult)
+                await webAPI_getMaths(host, "?op=%&x=100&y=0", showResult)
+                await webAPI_getMaths(host, "?op=%&x=0&y=0", showResult)
+                await webAPI_getMaths(host, "?op=!&n=0", showResult)
                 //n variable
                 await webAPI_getMaths(host, "?op=p&n=0", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=1", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=2", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=5", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=6", showResult)
+                await webAPI_getMaths(host, "?op=p&n=1", showResult)
+                await webAPI_getMaths(host, "?op=p&n=2", showResult)
+                await webAPI_getMaths(host, "?op=p&n=5", showResult)
+                await webAPI_getMaths(host, "?op=p&n=6", showResult)
                 await webAPI_getMaths(host, "?op=p&n=6.5", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=113", showResult)
-                // await webAPI_getMaths(host, "?op=p&n=114", showResult)
-                // await webAPI_getMaths(host, "?op=np&n=1", showResult) 
-                // await webAPI_getMaths(host, "?op=np&n=30", showResult)
+                await webAPI_getMaths(host, "?op=p&n=113", showResult)
+                await webAPI_getMaths(host, "?op=p&n=114", showResult)
+                await webAPI_getMaths(host, "?op=np&n=1", showResult)
+                await webAPI_getMaths(host, "?op=np&n=30", showResult)
                 //maj
                 await webAPI_getMaths(host, "?op=+&X=111&y=244", showResult)
                 await webAPI_getMaths(host, "?op=+&x=111&Y=244", showResult)
@@ -110,10 +119,13 @@
             if (problems == -1) {
                 $("#verdict").text("Service introuvable!");
             } else {
-                if (problems > 0)
-                    $("#verdict").text(problems + " problèmes");
-                else
+                if (problems > 0) {
+                    $("#verdict").text(problems + (problems === 1 ? " problème" : " problèmes"));
+                    $("#verdict").css("color", "red");
+                } else {
                     $("#verdict").text("Bravo!!! Aucun problème");
+                    $("#verdict").css("color", "green");
+                }
             }
         }
 
@@ -162,16 +174,16 @@
                     case '-': return (result.value == parseFloat(result.x) - parseFloat(result.y));
                     case '*': return (result.value == parseFloat(result.x) * parseFloat(result.y));
                     case '/':
-                        if (result.value == "NaN" && parseFloat(result.x) == 0 && parseFloat(result.y) == 0)
+                        if (isNaN(result.value) && parseFloat(result.x) == 0 && parseFloat(result.y) == 0)
                             return true;
                         return (result.value == parseFloat(result.x) / parseFloat(result.y));
                     case '%':
-                        if (result.value == "NaN" && parseInt(result.y) == 0)
+                        if (isNaN(result.value) && parseInt(result.x) == 0 && parseInt(result.y) == 0)
                             return true;
                         return (result.value == parseInt(result.x) % parseInt(result.y));
-                    case '!': return (result.value == factorial(parseInt(result.n)));
-                    case 'p': return (result.value == isPrime(parseInt(result.n)));
-                    case 'np': return (result.value == findPrime(parseInt(result.n)));
+                    case '!': return (result.value == this.factorial(parseInt(result.n)));
+                    case 'p': return (result.value == this.isPrime(parseInt(result.n)));
+                    case 'np': return (result.value == this.findPrime(parseInt(result.n)));
                     default:
                         return (result.error != null);
                 }
@@ -181,21 +193,31 @@
             return true;
         }
 
+        // function showResult(result) {
+        //     result = JSON.parse(result);
+        //     let problem = !verify(result);
+        //     let status = (!problem ? "OK" : "ERROR");
+        //     if (problem)
+        //         problems++;
+        //     // $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
+        //     $(".container").append(status + " ---> " + JSON.stringify(result)).append($("<br>"));
+        // }
         function showResult(result) {
             result = JSON.parse(result);
-            // console.log(result);
             let problem = !verify(result);
             let status = (!problem ? "OK" : "ERROR");
             if (problem)
                 problems++;
-            // $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
-            $(".container").append(status + " ---> " + JSON.stringify(result)).append($("<br>"));
+            const statusClass = (!problem ? "ok" : "error");
+            const statusText = '<span class="' + statusClass + '">' + status + '</span>';
+            $(".container").append(statusText + " ---> " + JSON.stringify(result)).append($("<br>"));
         }
+
         function factorial(n) {
             if (n === 0 || n === 1) {
                 return 1;
             }
-            return n * factorial(n - 1);
+            return n * this.factorial(n - 1);
         }
 
         function isPrime(value) {
