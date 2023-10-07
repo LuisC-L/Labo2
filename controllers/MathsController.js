@@ -32,9 +32,13 @@ export default class CoursesController extends Controller {
                 // handle error if the variable x or y are letters
                 if (isNaN(this.params.x) || isNaN(this.params.y)) {
                     if (this.params.x === 'X' || this.params.y === 'Y') {
-                        this.params.error = 'Variables x and y must be lowercase';
+                        this.params.error = 'Parameter x and y must be lowercase';
                     } else {
-                        this.params.error = 'Variables x and y must be numbers';
+                        if(isNaN(this.params.x)){
+                            this.params.error = 'Parameter x must be a number';
+                        }else if(isNaN(this.params.y)){
+                            this.params.error = 'Parameter y must be a number';
+                        }
                     }
                 } else {
                     let x = parseFloat(this.params.x);
@@ -56,7 +60,7 @@ export default class CoursesController extends Controller {
 
             if (!this.params.error && isPositive && isInteger && NOperation.includes(this.params.op)) {
                 if (isNaN(this.params.n)) {
-                    this.params.error = 'Variables n must be numeric';
+                    this.params.error = 'Parameter n must be a number';
                 } else {
                     let n = parseInt(this.params.n);
                     if (this.params.op === '!') {
@@ -72,9 +76,9 @@ export default class CoursesController extends Controller {
         // error for is negative or is not int
         if (!this.params.error && (!isPositive || !isInteger) && NOperation.includes(this.params.op)) {
             if (!isPositive)
-                this.params.error = "The parameter n must be positive!";
+                this.params.error = "The parameter n must be a integer > 0";
             else if (!isInteger)
-                this.params.error = "The parameter n must be a integer!";
+                this.params.error = "The parameter n must be a integer";
         }
         if (!this.params.error) {
             this.params.value = result;
@@ -88,7 +92,9 @@ export default class CoursesController extends Controller {
         return x - y;
     }
     div(x, y) {
-        if (x == 0 || y == 0)
+        if(x == 0)
+            return "NaN";
+        if (y == 0)
             return "Infinity";
         return x / y;
     }
@@ -97,7 +103,7 @@ export default class CoursesController extends Controller {
     }
     mod(x, y) {
         if (x == 0 || y == 0)
-            return "Infinity";
+            return "NaN";
         return x % y;
     }
 

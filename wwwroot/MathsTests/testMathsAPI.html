@@ -81,12 +81,14 @@
             if (!(await webAPI_getMaths(host, "?op=+&x=-111&y=-244", showResult)))
                 problems = -1;
             else {
+                await webAPI_getMaths(host, "?op=-&x=1&y=abc", showResult)
+                await webAPI_getMaths(host, "?op=p&n=a", showResult)
                 await webAPI_getMaths(host, "?op=-&x=111&y=244", showResult)
                 await webAPI_getMaths(host, "?op=*&x=11.56&y=244.12345", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=11.06", showResult)
                 await webAPI_getMaths(host, "?op=/&x=99&y=0", showResult)
                 await webAPI_getMaths(host, "?op=/&x=0&y=5", showResult)
-                await webAPI_getMaths(host, "?op=/&x=15&y=5", showResult)
+                await webAPI_getMaths(host, "?op=/&x=0&y=0", showResult)
                 await webAPI_getMaths(host, "?op=%&x=5&y=5", showResult)
                 await webAPI_getMaths(host, "?op=%&x=100&y=13", showResult)
                 //null error response
@@ -192,16 +194,7 @@
             }
             return true;
         }
-
-        // function showResult(result) {
-        //     result = JSON.parse(result);
-        //     let problem = !verify(result);
-        //     let status = (!problem ? "OK" : "ERROR");
-        //     if (problem)
-        //         problems++;
-        //     // $(".container").append(status + " ---> " + result.x + " " + result.op + " " + result.y + " = " + result.value).append($("<br>"));
-        //     $(".container").append(status + " ---> " + JSON.stringify(result)).append($("<br>"));
-        // }
+        
         function showResult(result) {
             result = JSON.parse(result);
             let problem = !verify(result);
